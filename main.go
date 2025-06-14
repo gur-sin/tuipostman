@@ -1,4 +1,4 @@
-package tuipostman
+package main
 
 import (
 	"fmt"
