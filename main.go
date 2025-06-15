@@ -250,37 +250,34 @@ func (m model) View() string {
 
 	var tabContent string
 	switch m.tabIndex {
+
 	case 0:
-		var headerLines []string
+		var headerRows []string
 		for i, h := range m.headers {
+			keyBox := h.key.View()
+			valBox := h.value.View()
+
 			if m.focusIndex == focusTabs && m.tabIndex == 0 {
 				if m.headerFocusIndex == i*2 {
-					h.key.PromptStyle = focusedStyle
+					keyBox = focusedStyle.Render(keyBox)
 				} else {
-					h.key.PromptStyle = blurredStyle
+					keyBox = blurredStyle.Render(keyBox)
 				}
 
 				if m.headerFocusIndex == i*2+1 {
-					h.value.PromptStyle = focusedStyle
+					valBox = focusedStyle.Render(valBox)
 				} else {
-					h.value.PromptStyle = blurredStyle
+					valBox = blurredStyle.Render(valBox)
 				}
+			} else {
+				keyBox = blurredStyle.Render(keyBox)
+				valBox = blurredStyle.Render(valBox)
 			}
 
-			kView := h.key.View()
-			vView := h.value.View()
-			line := lipgloss.JoinHorizontal(lipgloss.Top,
-				lipgloss.NewStyle().Width(17).Render(kView),
-				lipgloss.NewStyle().Width(2).Render(":"),
-				vView,
-			)
-			headerLines = append(headerLines, line)
+			row := lipgloss.JoinHorizontal(lipgloss.Top, keyBox, " ", valBox)
+			headerRows = append(headerRows, row)
 		}
-
-		tabContent = lipgloss.NewStyle().
-			PaddingTop(1).
-			PaddingLeft(2).
-			Render(strings.Join(headerLines, "\n"))
+		tabContent = placeholderStyle.Render(strings.Join(headerRows, "\n"))
 	case 1:
 		bodyView := m.bodyInput.View()
 		if m.focusIndex == focusTabs {
