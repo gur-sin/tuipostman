@@ -159,7 +159,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				newHeader := headerField{key: newKey, value: newValue}
 				m.headers = append(m.headers, newHeader)
 
-				m.headerFocusIndex = len(m.headers)*2 - 2 // focus on new key field
+				m.headerFocusIndex = len(m.headers)*2 - 2
 				return m, newHeader.key.Focus()
 			}
 
@@ -180,7 +180,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if msg.String() == "ctrl+r" {
 			if m.focusIndex == focusTabs && m.tabIndex == 1 {
-				m.tabIndex = 2 // switch to Response tab after sending
+				m.tabIndex = 2
 				return m, sendRequest(m)
 			}
 		}
@@ -194,7 +194,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	if m.focusIndex == focusTabs && m.tabIndex == 0 {
 		i := m.headerFocusIndex / 2
-		j := m.headerFocusIndex % 2 // 0 = key, 1 = value
+		j := m.headerFocusIndex % 2
 
 		var cmd tea.Cmd
 		if i < len(m.headers) {
