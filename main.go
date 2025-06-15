@@ -366,14 +366,26 @@ func sendRequest(m model) tea.Cmd {
 
 		args := []string{"--silent", "-X", method, url}
 
+		contentTypeSet := false
+
 		for _, h := range m.headers {
 			key := strings.TrimSpace(h.key.Value())
 			value := strings.TrimSpace(h.value.Value())
+
+			if strings.ToLower(key) == "content-type" {
+				contentTypeSet = true
+			}
 
 			if key != "" {
 				headerStr := fmt.Sprintf("%s: %s", key, value)
 				args = append(args, "-H", headerStr)
 			}
+		}
+
+		// Add JSON Content-Type if body looks like JSON and no Content-Type header is set
+		body := m.bodyInput.Value()
+		if !contentTypeSet && strings.HasPrefix(strings.TrimSpace(body), "{") {
+			args = append(args, "-H", "Content-Type: application/json")
 		}
 
 		if method == "POST" || method == "PUT" || method == "PATCH" || method == "DELETE" {
@@ -400,7 +412,7 @@ func sendRequest(m model) tea.Cmd {
 		if err != nil {
 			resp.err = fmt.Errorf("request failed: %v", err)
 		} else if errBuf.Len() > 0 {
-			resp.err = fmt.Errorf(errBuf.String())
+			resp.err = fmt.Errorf("%s", errBuf.String())
 		}
 
 		return resp
